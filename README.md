@@ -1,39 +1,19 @@
-# WasserXR-Blog
+# WasserXR Blog
 
-Blog website for WasserXR.
+<p align="center">
+    <img src="./src/assets/logo.svg" width="50%">
+</p>
 
-## Development
+A **dynamic XR Engine** to help you stay in the **flow**
 
-Use the repository dev shell for dependency and command management:
-
-```sh
-nix develop
-npm run dev
-```
-
-## Blog Posts
-
-Blog entries live in `src/content/blog/`. Add a Markdown or MDX file there and
-Astro will include it in the blog list automatically.
-
-Each post needs frontmatter like:
-
-```md
 ---
-title: Post title
-description: Short description for previews and metadata.
-pubDate: 2026-06-16
----
-```
 
-## Commands
+WasserXR is a game engine that works with an ECS that handles quick **hot
+reloading** and easy to **iterate code**. It is specialized for VR/MR/AR
+applications.
 
-| Command | Action |
-| :-- | :-- |
-| `npm run dev` | Starts the local dev server |
-| `npm run build` | Builds the production site to `dist/` |
-| `npm run preview` | Previews the production build |
-| `nix build` | Builds the Docker image package |
+This is the repository of the official blog of
+[WasserXR](https://wasserxr.com).
 
 ## Credit
 
