@@ -1,0 +1,30 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import Logo from '../assets/logo.svg';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<img src={Logo.src} alt="" width="96" height="96" />
+			<h1>WasserXR Blog</h1>
+			<p>
+				Development updates, implementation notes, and community calls for WasserXR live here.
+				The main documentation stays focused on learning and reference material.
+			</p>
+			<p>
+				Read the latest posts in the <a href="/blog">blog archive</a>, or go back to the
+				<a href="https://wasserxr.com">WasserXR documentation</a>.
+			</p>
+		</main>
+		<Footer />
+	</body>
+</html>

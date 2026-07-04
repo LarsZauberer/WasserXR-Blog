@@ -1,0 +1,21 @@
+---
+import Logo from '../assets/logo.svg';
+import Layout from '../layouts/BlogPost.astro';
+---
+
+<Layout
+	title="About the WasserXR Blog"
+	description="Development updates, design notes, and community stories from WasserXR."
+	pubDate={new Date('June 16 2026')}
+	heroImage={Logo}
+>
+	<p>
+		The WasserXR blog is the place for engine news, implementation notes, and community calls
+		that do not belong in the reference docs.
+	</p>
+
+	<p>
+		Documentation remains focused on learning and shipping. The blog gives experienced users a
+		lightweight way to follow what is changing and why.
+	</p>
+</Layout>

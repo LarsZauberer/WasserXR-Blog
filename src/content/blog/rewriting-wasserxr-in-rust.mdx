@@ -1,0 +1,60 @@
+---
+title: Rewriting WasserXR in Rust 🦀
+description: Why WasserXR is moving its foundation to Rust while keeping its dynamic workflow.
+pubDate: 2026-06-16
+---
+
+WasserXR is being rewritten in Rust.
+
+Before going into the reason, one thing should be clear: the main ideas of
+WasserXR are not going away. The engine will still keep its dynamic workflow,
+including hot reloading of systems and components. It will also continue to
+support systems and components written in any language that is compatible with
+the C ABI, so developers can still use the languages they prefer while linking
+against the ECS library.
+
+The rewrite is about the foundation underneath that workflow.
+
+Recently, we ran into a problem in the main demo code: when the engine was
+compiled with `-O3`, the demo produced a segmentation fault. With `-O0`, the
+same code did not crash.
+
+This kind of behavior is exactly the sort of issue that is difficult to work
+with. A bug that appears only with a certain optimization level can take a lot
+of time to narrow down. It might be caused by a wrong assumption in the code, a
+memory lifetime issue, an invalid access somewhere else, or undefined behavior
+that only becomes visible after the compiler optimizes the program differently.
+
+In an engine, that is especially unpleasant. WasserXR is meant to make iteration
+fast, but problems like this slow everything down. If a demo, plugin, or
+application suddenly behaves differently depending on compiler flags, developers
+first have to spend time figuring out whether the problem is in their own code,
+in a component, in a system, in the compiler setup, or somewhere inside
+WasserXR.
+
+We want to reduce that kind of debugging work.
+
+Rust is helpful here because it gives us stricter rules around ownership,
+borrowing, and lifetimes. It does not magically remove all bugs, and it does not
+mean WasserXR will suddenly be perfect. But it can make certain classes of
+mistakes harder to introduce in the first place, especially around memory safety
+and unclear ownership.
+
+That matters for the kind of code WasserXR is built from. The engine has to
+deal with runtime-loaded code, ECS data, components, systems, and boundaries
+between different parts of an application. Those are all places where the code
+benefits from being explicit about who owns what and how long data is valid.
+
+The goal of the rewrite is not to change what WasserXR is trying to be. The goal
+is to make the engine easier to work on, easier to reason about, and less likely
+to create strange low-level issues that cost developers and contributors a lot
+of time.
+
+WasserXR will still focus on quick iteration, hot reloading, and flexible
+language support through the C ABI. The Rust rewrite is a step toward keeping
+those features while making the internals more manageable for the future.
+
+This will take time, and there will be more updates as the rewrite progresses.
+For now, the short version is: we hit a class of problem that is painful to
+debug, and moving the foundation to Rust should help us avoid more of that in
+the long run.
