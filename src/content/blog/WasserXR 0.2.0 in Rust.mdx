@@ -6,48 +6,48 @@ description:
 pubDate: 2026-06-16
 ---
 
-I rewrote WasserXR to Rust.
+I rewrote WasserXR in Rust.
 
-Before going into the reason, one thing should be clear: the main ideas of
-WasserXR are not going away. The engine will still keep its dynamic workflow,
-including hot reloading of systems and components. It will also continue to try
-to support systems and components written in any language that is compatible
-with the C ABI as best as possible. So developers can still use the languages
-they prefer while linking against the ECS library.
+Before going into the reasons, one thing should be clear: the main ideas behind
+WasserXR are not going away. The engine will keep its dynamic workflow,
+including hot reloading of systems and components. I will also keep trying to
+support systems and components written in any language that is compatible with
+the C ABI as well as possible. So developers can still use the languages they
+prefer while linking against the ECS library.
 
 The rewrite is about the foundation underneath that workflow.
 
-Before the rust rewrite, there were a lot of small bugs that were hard to grasp
-and easy to overlook. Going into the new version 0.2.0 this has changed. The
-engine is much more stable now and works a lot more flawlessly.
+Before the Rust rewrite, there were a lot of small bugs that were hard to grasp
+and easy to overlook. With version 0.2.0, this has changed. The engine is much
+more stable now and works a lot more smoothly.
 
-Eventhough, rust is not known to support dynamic linking, I made it possible all
-the dynamic linking features needed for the dynamic ECS work. You will
-definitively keep all the hot reloading.
+Even though Rust is not exactly known for dynamic linking, I made the pieces
+that the ECS needs work anyway. You will definitely keep hot reloading.
 
-While doing the rewrite, a lot of other improvements happened:
+A few other improvements came with the rewrite:
 
 - The console is a TUI now
-- Better Macros in Rust for better development experience
-- New Concept: [Assets](https://wasserxr.com/getting_started/ecs/assets)
-- New Concept: [Resources](https://wasserxr.com/getting_started/ecs/resources)
-- Material Support
+- Better Rust macros for a better development experience
+- New concept: [Assets](https://wasserxr.com/getting_started/ecs/assets)
+- New concept: [Resources](https://wasserxr.com/getting_started/ecs/resources)
+- Material support
 
-Sadly, not everything has fully improved. For example, there have been a lot of
-public API changes. This means that your current games might need some work to
+Sadly, not everything is just better. For example, there have been a lot of
+public API changes. This means that your existing games might need some work to
 be ported to the new version.
 
-There are too many changes to count them but please refer to the new
+There are too many changes to list here, but please refer to the new
 [tutorials](https://wasserxr.com/getting_started/setup) and the
-[API Docs](https://docs.rs/wasserxr) regarding the C bindings.
+[API Docs](https://docs.rs/wasserxr) for the C bindings.
 
-Also, through the usage of rust libraries which are very rust heavy, certain
-types that you might query, might not be easily readable in C. This is a problem
-that I acknowledge and I will try my best to make everything as customizable as
-possible and expose a lot. Please do not hesitate to give me feedback regarding
-the C-ABI and WasserXR-Core compatibility.
+Also, because WasserXR now uses Rust libraries that lean heavily into Rust's
+type system, certain types that you might query from components might not be
+easily readable in C. This is a problem that I know about, and I will try my
+best to keep things customizable and expose what needs to be exposed. Please let
+me know what does and does not work for you around the C ABI and WasserXR-Core
+compatibility.
 
-I really believe that this rewrite helps WasserXR to become more stable and help
+I really believe that this rewrite helps WasserXR become more stable and helps
 developers create games even faster.
 
-I hope to see some small projects built with WasserXR.
+I hope to see some small projects built with WasserXR soon.
