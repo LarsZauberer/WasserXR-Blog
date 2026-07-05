@@ -1,0 +1,53 @@
+---
+title: WasserXR 0.2 in Rust 🦀
+description:
+  Why WasserXR is moving its foundation to Rust while keeping its dynamic
+  workflow.
+pubDate: 2026-06-16
+---
+
+I rewrote WasserXR in Rust for the 0.2 release.
+
+Before going into the reasons, one thing should be clear: the main ideas behind
+WasserXR are not going away. The engine will keep its dynamic workflow,
+including hot reloading of systems and components. I will also keep trying to
+support systems and components written in any language that is compatible with
+the C ABI as well as possible. So developers can still use the languages they
+prefer while linking against the ECS library.
+
+The rewrite is about the foundation underneath that workflow.
+
+Before the Rust rewrite, there were a lot of small bugs that were hard to grasp
+and easy to overlook. With version 0.2, this has changed. The engine is much
+more stable now and works a lot more smoothly.
+
+Even though Rust is not exactly known for dynamic linking, I made the pieces
+that the ECS needs work anyway. You will definitely keep hot reloading.
+
+A few other improvements came with the rewrite:
+
+- The console is a TUI now
+- Better Rust macros for a better development experience
+- New concept: [Assets](https://wasserxr.com/getting_started/ecs/assets)
+- New concept: [Resources](https://wasserxr.com/getting_started/ecs/resources)
+- Material support
+
+Sadly, not everything is just better. For example, there have been a lot of
+public API changes. This means that your existing games might need some work to
+be ported to the new version.
+
+There are too many changes to list here, but please refer to the new
+[tutorials](https://wasserxr.com/getting_started/setup) and the
+[API Docs](https://docs.rs/wasserxr) for the C bindings.
+
+Also, because WasserXR now uses Rust libraries that lean heavily into Rust's
+type system, certain types that you might query from components might not be
+easily readable in C. This is a problem that I know about, and I will try my
+best to keep things customizable and expose what needs to be exposed. Please let
+me know what does and does not work for you around the C ABI and WasserXR-Core
+compatibility.
+
+I really believe that this rewrite helps WasserXR become more stable and helps
+developers create games even faster.
+
+I hope to see some small projects built with WasserXR soon.
