@@ -1,0 +1,65 @@
+name: Build Image and Kubernetes Config
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Log in to registry
+        uses: docker/login-action@v4
+        with:
+          registry: registry.larszauberer.com
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Upload Docker Image
+        run: |
+          mkdir -p "$RUNNER_TEMP/containers"
+          printf 'unqualified-search-registries = []\n' > "$RUNNER_TEMP/containers/registries.conf"
+          auth_file="${DOCKER_CONFIG:-$HOME/.docker}/config.json"
+          nix run .#kubernetes-docker -- \
+            --registries-conf "$RUNNER_TEMP/containers/registries.conf" \
+            --dest-authfile "$auth_file"
+
+      - name: Build Cluster Config
+        run: |
+          nix build .#kubernetes
+
+      - name: Copy Build Files over
+        run: |
+          mkdir -p cluster_builds/
+          cp result cluster_builds/default.yaml
+
+      - name: GitHub Commit
+        run: |
+          git add cluster_builds
+          if git diff --cached --quiet; then
+            echo "No manifest changes to commit"
+          else
+            git commit -m "Build: Cluster Config and Image"
+            git push
+          fi
