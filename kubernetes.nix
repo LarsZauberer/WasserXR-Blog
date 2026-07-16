@@ -33,6 +33,14 @@ in
             image = config.docker.images.wasserxr-blog.path;
             ports = [ { port = 80; } ];
             replicas = 3;
+            startupProbe = {
+              path = "/";
+              port = 80;
+            };
+            livenessProbe = {
+              path = "/";
+              port = 80;
+            };
           })
           (clusterLib.createService {
             name = "wasserxr-blog";
