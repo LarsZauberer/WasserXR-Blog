@@ -1,0 +1,156 @@
+---
+title: Status of WasserXR 0.3
+description: How is the development of WasserXR going?
+pubDate: 2026-09-06
+---
+
+It has been a hot minute since the demo presentation of WasserXR at the
+[ETH Game Dev Club](https://www.ethgames.dev/) and a very long time since the
+last update on the blog.
+
+First of all, I honestly didn't realize it had been so long since the last
+update. I'll try to post more frequently, even if the updates are smaller.
+
+So, how is development going? It has been moving a bit more slowly over the last
+couple of weeks, partly because I had exams to prepare for. I also got some
+feedback from you regarding the architecture and the general API, and I found
+some other issues that I wanted to resolve in the WasserXR ECS before continuing
+to work on new features in WasserXR-Core.
+
+That made me decide to start another large rewrite. Fortunately, the API will
+remain much more recognizable than after the last rewrite. In a future update,
+I'll provide a more concrete migration guide explaining what changed and how you
+can replace existing code with the new code.
+
+In this post, I'll explain some major changes I'm working on, both code-related
+and organizational, and why I'm making them.
+
+## Separate versions for WasserXR and WasserXR-Core
+
+Let's start with a change to how versions are managed. Until now, I have mostly
+tried to keep the versions of WasserXR and WasserXR-Core in sync. For example,
+when I developed WasserXR 0.2, I also developed WasserXR-Core 0.2.
+
+That won't make sense in the long run. Once the API of WasserXR is stable, I
+expect WasserXR itself to change less frequently. WasserXR-Core, however, will
+continue to improve, adding features and updates that don't require changes to
+WasserXR.
+
+So I'm separating the version numbers of WasserXR and WasserXR-Core. WasserXR
+might end up at version 0.3, while WasserXR-Core 0.9 is already out.
+
+This does mean there will be some version dependencies between them. I'll
+clearly document which versions of WasserXR-Core require which versions of
+WasserXR. I also plan to resolve this with runtime checks when plugins are
+loaded. The new plugin definitions will make that possible, and I'll explain
+them next.
+
+## Plugin definitions
+
+Plugin definitions are the new way to declare plugins in WasserXR.
+
+Instead of resolving ECS objects by depending on exact function and global
+symbol names, we now do that only once when the plugin is loaded. We load a
+global variable called `wxr_plugin`, which defines the plugin's metadata and all
+of its content. It contains pointers to all the component creation functions,
+system runner functions, and so on.
+
+Now WasserXR can know exactly what is defined at all times, and resolution will
+also be much faster. Furthermore, you won't need to rely on WasserXR's naming
+schemes for your functions, so you can name them whatever you like.
+
+I briefly mentioned plugin metadata before. One additional piece of metadata
+will be the engine version the plugin depends on i.e. the version of WasserXR it
+was compiled with.
+
+At the moment, the plugin loader rejects any plugin whose WasserXR minor version
+does not match the minor version of WasserXR used by your game. Later, when
+WasserXR's API is stable and we enter the 1.x series, only the major versions
+will have to match.
+
+Examples:
+
+| Plugin WasserXR Version | Compatible Game WasserXR Versions |
+| ----------------------- | --------------------------------- |
+| 0.3.4                   | 0.3.x                             |
+| 0.5.1                   | 0.5.x                             |
+| 1.1.2                   | 1.x.x                             |
+
+This also means that, officially, all versions of WasserXR older than 1.0 will
+still be considered early-access versions and may still have an unstable or
+frequently changing public API. (As you can see in this current rewrite.)
+
+## Declarative system requests
+
+I am removing the `wxr_select` function for systems. It will be replaced by a
+system definition that describes the system in the plugin definition.
+
+In addition to pointers to the attacher, runner, and detacher functions, the
+system definition will let you describe which entity query groups and which
+assets you want to access. You will also be able to request exactly which fields
+from your components you want to access, and whether that access is mutable or
+immutable.
+
+This small change will bring many benefits and open up a lot of new
+possibilities. For example, WasserXR can already cache which entities and fields
+are associated with each system.
+
+## Parallelization of systems
+
+It bothers me that I am so heavily CPU-bottlenecked in VRChat. My GPU is not
+maxed out, but I still do not get full FPS. I suspect the main problem is that
+only two cores of my CPU are actually doing anything.
+
+> I want an option like the one in Minecraft's Distant Horizons mod that says,
+> "I paid for the whole CPU."
+
+But enough with the rant. I want to make parallelization in WasserXR as easy as
+possible and perhaps bring ideas from Rust's "Fearless Concurrency" to C-ABI-
+compatible languages.
+
+That is why all systems will, by default, run in parallel with each other.
+
+You might be asking: how will this be possible without introducing horrendous
+locking problems or race conditions?
+
+The way I can get around this is to use the information that the systems already
+provide in their definitions. They already tell WasserXR at load time what they
+want to access.
+
+I am currently envisioning the following algorithm: When a system is added to or
+removed from the scene, it will trigger a graph-coloring computation. This will
+compute the required scheduling groups, where a scheduling group is a set of
+systems that can safely run in parallel. Systems can safely run in parallel if,
+for every requested field, one of the following holds:
+
+- both systems access the field as read-only (immutable)
+- one system requests the field mutably, while the other does not request it at
+  all.
+
+This can be nicely modeled as a graph coloring problem.
+
+As you probably know, graph coloring is NP-hard, which simply means that it is
+quite computationally intensive.
+
+The good thing is that this computation only has to happen when a system is
+added or removed. At all other times, the computation is unnecessary and can
+therefore be cached.
+
+## Smaller changes
+
+Here are some smaller changes that should also be nice:
+
+- Every ECS object will have better handles, so we will not always need to
+  perform the full string comparison used before.
+- Cleaner code with better internal structure and boundaries.
+- Cleaner and more meaningful tests.
+- Better documentation for users and developers.
+- Better annotations around Rust `unsafe` code.
+
+## Final
+
+I hope this new architecture will last a bit longer and that, after this
+rewrite, I can finally move faster towards building the long-awaited OpenXR
+support for WasserXR.
+
+Stay tuned.
