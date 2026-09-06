@@ -37,13 +37,14 @@ continue to improve, adding features and updates that don't require changes to
 WasserXR.
 
 So I'm separating the version numbers of WasserXR and WasserXR-Core. WasserXR
-might end up at version 0.3, while WasserXR-Core 0.9 is already out.
+might still be at version 0.3 at some point, while WasserXR-Core 0.9 could
+already be out.
 
-This does mean there will be some version dependencies between them. I'll
+This does mean that only some versions are compatible with each other. I'll
 clearly document which versions of WasserXR-Core require which versions of
-WasserXR. I also plan to resolve this with runtime checks when plugins are
-loaded. The new plugin definitions will make that possible, and I'll explain
-them next.
+WasserXR. I also plan to prevent crashes caused by these compatibility
+mismatches by adding runtime checks when plugins are loaded. The new plugin
+definitions will make that possible, and I'll explain them next.
 
 ## Plugin definitions
 
@@ -70,15 +71,15 @@ will have to match.
 
 Examples:
 
-| Plugin WasserXR Version | Compatible Game WasserXR Versions |
-| ----------------------- | --------------------------------- |
-| 0.3.4                   | 0.3.x                             |
-| 0.5.1                   | 0.5.x                             |
-| 1.1.2                   | 1.x.x                             |
+| Plugin WasserXR Version (Compiled Plugin) | Compatible Game WasserXR Versions (Loading Game) |
+| ----------------------------------------- | ------------------------------------------------ |
+| 0.3.4                                     | 0.3.x                                            |
+| 0.5.1                                     | 0.5.x                                            |
+| 1.1.2                                     | 1.x.x                                            |
 
 This also means that, officially, all versions of WasserXR older than 1.0 will
-still be considered early-access versions and may still have an unstable or
-frequently changing public API. (As you can see in this current rewrite.)
+still be considered early-access versions and may have an unstable or frequently
+changing public API. (As you can see in this current rewrite.)
 
 ## Declarative system requests
 
@@ -151,6 +152,6 @@ Here are some smaller changes that should also be nice:
 
 I hope this new architecture will last a bit longer and that, after this
 rewrite, I can finally move faster towards building the long-awaited OpenXR
-support for WasserXR.
+support for WasserXR-Core.
 
 Stay tuned.
